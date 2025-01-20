@@ -21,7 +21,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - D:\Perplexica\db-store:/home/perplexica/data
+      - D:\Volumes\Perplexica\db-store:/home/perplexica/data
       - ./config.toml:/home/perplexica/config.toml
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -47,4 +47,5 @@ services:
 
 networks:
   perplexica-network:
+    name: perplexica
 
