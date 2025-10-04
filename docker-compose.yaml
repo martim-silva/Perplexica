@@ -2,14 +2,23 @@ services:
   searxng:
     image: docker.io/searxng/searxng:latest
     volumes:
-      - D:\Perplexica\searxng:/etc/searxng
+      - searxng-data:/etc/searxng
     ports:
       - 4000:8080
+    environment:
+      - SEARXNG_PORT=8080
+      - SEARXNG_BIND_ADDRESS=0.0.0.0
     networks:
       - perplexica-network
+      - cloudflare-network
     restart: unless-stopped
+    labels:
+      - "dockflare.enable=true"
+      - "dockflare.hostname=searxng.mhs-cloud.com"
+      - "dockflare.service=http://searxng:8080"
+      - "dockflare.no_tls_verify=true"
 
-  perplexica-backend:
+  perplexica-api:
     build:
       context: .
       dockerfile: backend.dockerfile
@@ -21,31 +30,68 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - D:\Volumes\Perplexica\db-store:/home/perplexica/data
+      - perplexica-data:/home/perplexica/data
       - ./config.toml:/home/perplexica/config.toml
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
       - perplexica-network
+      - cloudflare-network
     restart: unless-stopped
+    labels:
+      - "dockflare.enable=true"
+      - "dockflare.hostname=perplexica-api.mhs-cloud.com"
+      - "dockflare.service=http://perplexica-api:3001"
+      - "dockflare.no_tls_verify=true"
 
-  perplexica-frontend:
+  perplexica:
     build:
       context: .
       dockerfile: app.dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=http://192.168.1.85:3001/api
-        - NEXT_PUBLIC_WS_URL=ws://192.168.1.85:3001
-    # image: itzcrazykns1337/perplexica-frontend:main
+        - NEXT_PUBLIC_API_URL=http://perplexica-api.mhs-cloud.com/api
+        - NEXT_PUBLIC_WS_URL=ws://perplexica-api.mhs-cloud.com
     depends_on:
-      - perplexica-backend
+      - perplexica-api
     ports:
       - 3002:3000
     networks:
       - perplexica-network
+      - traefik-network
+      - cloudflare-network
     restart: unless-stopped
+    labels:
+      - "dockflare.enable=true"
+      - "dockflare.hostname=perplexica.mhs-cloud.com"
+      - "dockflare.service=http://perplexica:3000"
+      - "dockflare.no_tls_verify=true"
+
+volumes:
+  searxng-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /media/share2/downloads/volumes/perplexica/searxng
+
+  perplexica-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /media/share2/downloads/volumes/perplexica/data
 
 networks:
   perplexica-network:
     name: perplexica
+    external: true
+
+  traefik-network:
+    name: traefik
+    external: true
+
+  cloudflare-network:
+    name: cloudflare-net
+    external: true
+  
 
