@@ -1,0 +1,91 @@
+# Perplexica — AI-Powered Search Engine for Jericho
+# Combines SearXNG web search with LLM summarization
+# Uses Ollama as the LLM backend (sovereign, no external API)
+# Uses the shared SearXNG instance from Open WebUI (on the ai network)
+#
+# API: POST /api/search, GET /api/health
+# Build: from source (backend.dockerfile + app.dockerfile)
+services:
+  perplexica-api:
+    build:
+      context: .
+      dockerfile: backend.dockerfile
+    container_name: perplexica-api
+    restart: unless-stopped
+    environment:
+      - SEARXNG_API_URL=http://perplexica-searxng:8080
+    depends_on:
+      perplexica-searxng:
+        condition: service_healthy
+    volumes:
+      - perplexica-data:/home/perplexica/data
+      - ./config.toml:/home/perplexica/config.toml:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http=require('http');const r=http.get('http://localhost:3001/api',res=>{process.exit(res.statusCode===200?0:1)});r.on('error',()=>process.exit(1));r.setTimeout(3000,()=>{r.destroy();process.exit(1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - ai
+      - monitoring
+
+  perplexica:
+    build:
+      context: .
+      dockerfile: app.dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://perplexica-api:3001/api
+        - NEXT_PUBLIC_WS_URL=ws://perplexica-api:3001
+    container_name: perplexica
+    restart: unless-stopped
+    depends_on:
+      perplexica-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - ai
+      - traefik
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.perplexica.rule=Host(`perplexica.localhost`)"
+      - "traefik.http.routers.perplexica.entrypoints=web"
+      - "traefik.http.services.perplexica.loadbalancer.server.port=3000"
+
+  # Perplexica's own SearXNG instance — separate from Open WebUI's
+  # Perplexica expects SearXNG at a specific URL configured in the backend
+  perplexica-searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: perplexica-searxng
+    restart: unless-stopped
+    volumes:
+      - searxng-data:/etc/searxng
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ai
+      - monitoring
+
+networks:
+  ai: &default-network
+    external: true
+  traefik:
+    <<: *default-network
+  monitoring:
+    <<: *default-network
+
+volumes:
+  perplexica-data:
+  searxng-data:
+
+
+

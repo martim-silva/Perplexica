@@ -10,5 +10,5 @@ ANTHROPIC = "" # Anthropic API key - sk-ant-1234567890abcdef1234567890abcdef
 GEMINI = "" # Gemini API key - sk-1234567890abcdef1234567890abcdef
 
 [API_ENDPOINTS]
-SEARXNG = "http://searxng:8080" # SearxNG API URL
-OLLAMA = "http://host.docker.internal:11434"
+SEARXNG = "http://perplexica-searxng:8080" # SearxNG API URL
+OLLAMA = "http://ollama:11434"

@@ -1,0 +1,25 @@
+name: perplexica
+category: search
+layer: application
+domain: research
+status: active
+modifiers:
+- ctw
+- tower
+networks:
+- ai
+- traefik
+- monitoring
+boot_priority: 50
+gate:
+  target: perplexica
+  type: healthy
+  timeout: 120
+kind: deployment
+consumes:
+- inference
+provides:
+- research
+ingress:
+- host: perplexica.localhost
+  port: 3000
