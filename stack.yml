@@ -23,3 +23,10 @@ provides:
 ingress:
 - host: perplexica.localhost
   port: 3000
+builds:
+  - name: perplexica-api
+    context: .
+    dockerfile: backend.dockerfile
+  - name: perplexica
+    context: .
+    dockerfile: app.dockerfile

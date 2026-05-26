@@ -10,6 +10,7 @@ services:
     build:
       context: .
       dockerfile: backend.dockerfile
+    image: perplexica-api:latest
     container_name: perplexica-api
     restart: unless-stopped
     environment:
@@ -37,6 +38,7 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=http://perplexica-api:3001/api
         - NEXT_PUBLIC_WS_URL=ws://perplexica-api:3001
+    image: perplexica:latest
     container_name: perplexica
     restart: unless-stopped
     depends_on:
