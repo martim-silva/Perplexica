@@ -1,6 +1,7 @@
 name: perplexica
 category: search
 layer: application
+host: mac
 domain: research
 status: active
 modifiers:
