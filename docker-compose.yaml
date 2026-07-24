@@ -91,7 +91,7 @@ networks:
     external: true
 
   cloudflare-network:
-    name: cloudflare-net
+    name: cloudflare
     external: true
   
 
