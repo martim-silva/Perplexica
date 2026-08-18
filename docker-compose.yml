@@ -61,9 +61,15 @@ services:
       - "traefik.http.services.perplexica.loadbalancer.server.port=3000"
       - "homepage.group=AI"
       - "homepage.name=Perplexica"
+<<<<<<< HEAD
       - "homepage.icon=https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/perplexity.svg"
       - "homepage.href=http://perplexica.localhost"
       - "homepage.description=Web search with local LLM summarization"
+=======
+      - "homepage.icon=https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/searxng.svg"
+      - "homepage.href=http://perplexica.localhost"
+      - "homepage.description=AI-powered web search with local LLM summarization"
+>>>>>>> c37f7283b3186338f0a353087d1b492305a70087
       - "homepage.widget.type=http"
       - "homepage.widget.url=http://perplexica.localhost"
 

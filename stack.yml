@@ -24,6 +24,7 @@ provides:
 ingress:
 - host: perplexica.localhost
   port: 3000
+  cf_hostname: perplexica.mhs-cloud.com
 builds:
   - name: perplexica-api
     context: .
