@@ -8,3 +8,4 @@ services:
     - traefik.http.routers.perplexica-public.rule=Host(`perplexica.mhs-cloud.com`)
     - traefik.http.routers.perplexica-public.entrypoints=web
     - traefik.http.routers.perplexica-public.service=perplexica
+    - traefik.http.routers.perplexica-public.middlewares=authentik-auth@docker

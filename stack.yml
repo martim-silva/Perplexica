@@ -19,11 +19,13 @@ gate:
 kind: deployment
 consumes:
 - inference
+- identity
 provides:
 - research
 ingress:
 - host: perplexica.localhost
   port: 3000
+  auth: forward-auth
   cf_hostname: perplexica.mhs-cloud.com
 builds:
   - name: perplexica-api

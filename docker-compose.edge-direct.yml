@@ -9,3 +9,4 @@ services:
     - dockflare.hostname=perplexica.mhs-cloud.com
     - dockflare.service=http://perplexica:3000
     - dockflare.no_tls_verify=true
+    - dockflare.access.policy=authenticate
